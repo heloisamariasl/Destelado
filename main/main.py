@@ -1,5 +1,6 @@
 import pygame as pg
 from personagem import Personagem
+from inimigo import Cachorro
 
 pg.init()
 janela = pg.display.set_mode((800, 600))
@@ -9,6 +10,7 @@ pg.display.set_caption("Destelado")
 clock = pg.time.Clock()
 
 gato = Personagem()
+cao = Cachorro(400,300,100,500)
 
 sair = False
 while not sair:
@@ -22,10 +24,12 @@ while not sair:
         
         gato.eventos(event)
     gato.atualizar()
-
+    cao.atualizar()
+    
     janela.fill((30,30,30))
     
     gato.desenhar(janela)
+    cao.desenhar_cao(janela)
     
     pg.display.flip()
         
