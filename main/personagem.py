@@ -4,12 +4,12 @@ from pygame.locals import *
 class Personagem:
     def __init__(self):
         #sprites para cada estado do personagem
-        self.parado = pg.image.load('./Cat Game Assets/Tilesets/Cat1_Standing.png').convert_alpha()
-        self.andando = pg.image.load('./Cat Game Assets/Tilesets/Cat1_Walking.png').convert_alpha()
-        self.pulando = pg.image.load('./Cat Game Assets/Tilesets/Cat1_Jumping.png').convert_alpha()
-        self.ult = pg.image.load('./Cat Game Assets/Tilesets/Cat1_Attack3.png').convert_alpha()
-        self.ataque1 = pg.image.load('./Cat Game Assets/Tilesets/Cat1_Attack1.png').convert_alpha()
-        self.ataque2 = pg.image.load('./Cat Game Assets/Tilesets/Cat1_Attack2.png').convert_alpha()
+        self.parado = pg.image.load('assets/Cat Game Assets/Tilesets/Cat1_Standing.png').convert_alpha()
+        self.andando = pg.image.load('assets/Cat Game Assets/Tilesets/Cat1_Walking.png').convert_alpha()
+        self.pulando = pg.image.load('assets/Cat Game Assets/Tilesets/Cat1_Jumping.png').convert_alpha()
+        self.ult = pg.image.load('assets/Cat Game Assets/Tilesets/Cat1_Attack3.png').convert_alpha()
+        self.ataque1 = pg.image.load('assets/Cat Game Assets/Tilesets/Cat1_Attack1.png').convert_alpha()
+        self.ataque2 = pg.image.load('assets/Cat Game Assets/Tilesets/Cat1_Attack2.png').convert_alpha()
         
         self.frame = 0
         self.x_gato = 400
