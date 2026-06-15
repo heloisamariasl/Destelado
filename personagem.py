@@ -9,7 +9,9 @@ pg.display.set_caption("Destelado")
 parado = pg.image.load('./Cat Game Assets/Tilesets/Cat1_Standing.png').convert_alpha()
 andando = pg.image.load('./Cat Game Assets/Tilesets/Cat1_Walking.png').convert_alpha()
 pulando = pg.image.load('./Cat Game Assets/Tilesets/Cat1_Jumping.png').convert_alpha()
-atacando = pg.image.load('./Cat Game Assets/Tilesets/Cat1_Attack3.png').convert_alpha()
+ult = pg.image.load('./Cat Game Assets/Tilesets/Cat1_Attack3.png').convert_alpha()
+ataque1 = pg.image.load('./Cat Game Assets/Tilesets/Cat1_Attack1.png').convert_alpha()
+ataque2 = pg.image.load('./Cat Game Assets/Tilesets/Cat1_Attack2.png').convert_alpha()
 
 
 sair = False
@@ -22,7 +24,9 @@ y_gato = 300
 largura_frame_parado, altura_frame_parado = 50, 64
 largura_frame_andando, altura_frame_andando = 64, 64
 largura_frame_pulando, altura_frame_pulando = 80, 80
-largura_frame_atacando, altura_frame_atacando = 80, 80
+largura_frame_ult, altura_frame_ult = 80, 80
+largura_frame_ataque1, altura_frame_ataque1 = 80, 64
+largura_frame_ataque2, altura_frame_ataque2 = 80, 80
 
 #flag para controlar a direção do gato
 virado_esquerda = False
@@ -50,7 +54,7 @@ while not sair:
                 sair = True
                 frame = 0   
             #iniciar o ataque se a barra de espaço for pressionada
-            if event.key == pg.K_SPACE and not atacando_agora:
+            if (event.key == pg.K_SPACE or event.key == pg.K_q or event.key == pg.K_e) and not atacando_agora:
                 atacando_agora = True
                 frame = 0
 
@@ -106,12 +110,22 @@ while not sair:
             velocidade_y = 0
             frame = 0
     
-    #atualiza o sprite para estado "atacando" se a barra de espaço for pressionada
+    #atualiza o sprite para estado "atacando" verifica qual o ataque
     if atacando_agora:
-        sprite_atual = atacando
-        largura_frame_atual = largura_frame_atacando
-        altura_frame_atual = altura_frame_atacando
-        ajuste_y = -16
+        if tecla[K_SPACE]:
+            sprite_atual = ult
+            largura_frame_atual = largura_frame_ult
+            altura_frame_atual = altura_frame_ult
+            ajuste_y = -16
+        elif tecla[K_q]:
+            sprite_atual = ataque1
+            largura_frame_atual = largura_frame_ataque1
+            altura_frame_atual = altura_frame_ataque1
+        elif tecla[K_e]:
+            sprite_atual = ataque2
+            largura_frame_atual = largura_frame_ataque2
+            altura_frame_atual = altura_frame_ataque2
+            ajuste_y = -16
 
     #calcula o número total de frames no sprite atual para controlar a animação
     #(os estados do gato têm diferentes quantidades de frames,
