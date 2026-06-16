@@ -19,8 +19,8 @@ class Cachorro:
         self.ponto_inicial = ponto_inicial
         self.ponto_final = ponto_final
 
-        #tamanho de casa sprite
-        self.largura_frame_cao_andando = 93 
+        #tamanho de cada sprite
+        self.largura_frame_cao_andando = 94 
         self.altura_frame_cao_andando = 62
         
         self.total_frames = self.cao_andando.get_width() // self.largura_frame_cao_andando
