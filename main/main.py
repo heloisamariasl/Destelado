@@ -10,7 +10,7 @@ pg.display.set_caption("Destelado")
 clock = pg.time.Clock()
 
 gato = Personagem()
-cao = Cachorro(400,300,100,500)
+cao = Cachorro(400,306,100,500)
 
 sair = False
 while not sair:
@@ -26,8 +26,15 @@ while not sair:
     gato.atualizar()
     cao.atualizar()
     
-    janela.fill((30,30,30))
+    if cao.cao_vivo and gato.rect.colliderect(cao.rect) and not gato.invulneravel:
+        gato.tomar_dano()
+        print(gato.vida_gato)
     
+    if cao.cao_vivo and gato.rect.colliderect(cao.rect) and gato.atacando_agora:
+        cao.cao_vivo = False
+          
+    janela.fill((30,30,30))
+     
     gato.desenhar(janela)
     cao.desenhar_cao(janela)
     

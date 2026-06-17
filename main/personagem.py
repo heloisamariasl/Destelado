@@ -4,16 +4,19 @@ from pygame.locals import *
 class Personagem:
     def __init__(self):
         #sprites para cada estado do personagem
-        self.parado = pg.image.load('assets/Cat Game Assets/Tilesets/Cat1_Standing.png').convert_alpha()
-        self.andando = pg.image.load('assets/Cat Game Assets/Tilesets/Cat1_Walking.png').convert_alpha()
-        self.pulando = pg.image.load('assets/Cat Game Assets/Tilesets/Cat1_Jumping.png').convert_alpha()
-        self.ult = pg.image.load('assets/Cat Game Assets/Tilesets/Cat1_Attack3.png').convert_alpha()
-        self.ataque1 = pg.image.load('assets/Cat Game Assets/Tilesets/Cat1_Attack1.png').convert_alpha()
-        self.ataque2 = pg.image.load('assets/Cat Game Assets/Tilesets/Cat1_Attack2.png').convert_alpha()
+        self.parado = pg.image.load('assets/Cat/Tilesets/Cat1_Standing.png').convert_alpha()
+        self.andando = pg.image.load('assets/Cat/Tilesets/Cat1_Walking.png').convert_alpha()
+        self.pulando = pg.image.load('assets/Cat/Tilesets/Cat1_Jumping.png').convert_alpha()
+        self.ult = pg.image.load('assets/Cat/Tilesets/Cat1_Attack3.png').convert_alpha()
+        self.ataque1 = pg.image.load('assets/Cat/Tilesets/Cat1_Attack1.png').convert_alpha()
+        self.ataque2 = pg.image.load('assets/Cat/Tilesets/Cat1_Attack2.png').convert_alpha()
+        self.dano_gato = pg.image.load('assets/Cat/Tilesets/Cat1_Hurt.png').convert_alpha()
         
         self.frame = 0
-        self.x_gato = 400
+        self.x_gato = 100
         self.y_gato = 300
+        
+        self.vida_gato = 7
         
         #flag para controlar a direção do gato
         self.virado_esquerda = False
@@ -21,6 +24,11 @@ class Personagem:
         #flag para ver se está andando
         self.andando_flag = False
         
+        #variaveis para dano
+        self.tomando_dano = False
+        self.invulneravel = False
+        self.tempo_invulneravel = 0
+                
         #variaveis para controlar o pulo
         self.pulando_agora = False
         self.velocidade_y = 0
@@ -49,6 +57,9 @@ class Personagem:
         
         self.largura_frame_ataque2 = 80
         self.altura_frame_ataque2 = 80
+        
+        self.largura_frame_dano = 64
+        self.altura_frame_dano = 64
         
     
     def eventos(self,event):
@@ -102,7 +113,14 @@ class Personagem:
             self.y_gato = self.chao_y
             self.pulando_agora = False
             self.velocidade_y = 0
-                    
+        
+        if self.invulneravel:
+            self.tempo_invulneravel -=1
+            if self.tempo_invulneravel <= 0:
+                self.invulneravel = False
+        
+        self.rect = pg.Rect(self.x_gato, self.y_gato, 50, 64)
+        
     #função para ver qual o estado do personagem e qual frame imprimir
     def desenhar(self,janela):
         #define o sprite atual para "parado" por padrão
@@ -112,8 +130,14 @@ class Personagem:
         self.altura_frame_atual = self.altura_frame_parado
         self.ajuste_y = 0
 
-        #atualizando o sprite para estado "pulando" se o gato estiver pulando
-        if self.pulando_agora:
+        #atualiza o sprite para o dano
+        if self.tomando_dano:
+            self.sprite_atual = self.dano_gato
+            self.largura_frame_atual = self.largura_frame_dano
+            self.altura_frame_atual = self.altura_frame_dano
+            
+        #atualizando o sprite para estado "pulando" se o gato estiver pulando       
+        elif self.pulando_agora:
             self.sprite_atual = self.pulando
             self.largura_frame_atual = self.largura_frame_pulando
             self.altura_frame_atual = self.altura_frame_pulando
@@ -155,6 +179,11 @@ class Personagem:
                 self.atacando_agora = False
                 self.frame = 0
 
+        if self.tomando_dano:
+            if self.frame >= self.total_frames-1:
+                self.tomando_dano = False
+                self.frame = 0
+        
         #reseta para 0 quando chega no último frame
         if self.frame >= self.total_frames:
             self.frame = 0
@@ -165,9 +194,19 @@ class Personagem:
         #espelha o frame quando tiver virado pra esquerda
         if self.virado_esquerda:
             self.frame_gato = pg.transform.flip(self.frame_gato, True, False)
+        
+        self.rect = pg.Rect(self.x_gato, self.y_gato, self.largura_frame_atual, self.altura_frame_atual)
 
         #mostra o frame atual do gato na janela
         janela.blit(self.frame_gato, (self.x_gato, self.y_gato + self.ajuste_y))
         #pg.display.flip()
 
         self.frame += 1
+    
+    #função de dano do gato
+    def tomar_dano(self):
+        self.vida_gato -=1
+        self.tomando_dano = True
+        self.invulneravel = True
+        self.tempo_invulneravel = 60
+        self.frame = 0
