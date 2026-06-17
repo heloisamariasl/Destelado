@@ -24,7 +24,7 @@ while not sair:
         
         gato.eventos(event)
     gato.atualizar()
-    cao.atualizar()
+    cao.atualizar(gato)
     
     if cao.cao_vivo and gato.rect.colliderect(cao.rect) and not gato.invulneravel:
         if gato.atacando_agora:
