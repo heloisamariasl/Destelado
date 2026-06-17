@@ -27,11 +27,11 @@ while not sair:
     cao.atualizar()
     
     if cao.cao_vivo and gato.rect.colliderect(cao.rect) and not gato.invulneravel:
-        gato.tomar_dano()
-        print(gato.vida_gato)
-    
-    if cao.cao_vivo and gato.rect.colliderect(cao.rect) and gato.atacando_agora:
-        cao.cao_vivo = False
+        if gato.atacando_agora:
+            cao.cao_vivo = False
+        
+        elif not gato.invulneravel:
+            gato.tomar_dano()
           
     janela.fill((30,30,30))
      
