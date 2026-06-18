@@ -6,11 +6,20 @@ class Cachorro:
         #sprite sheet da animação andando
         self.cao_andando = pg.image.load('assets/Dog/Dog_Walking.png').convert_alpha()
         self.cao_latindo = pg.image.load('assets/Dog/Dog_Barking.png').convert_alpha()
+        self.cao_correndo = pg.image.load('assets/Dog/Dog_Running.png').convert_alpha()
         
         self.frame = 0
         self.cao_vivo = True
         
         self.estado_cao = 'patrulhando'
+        
+        self.x_retorno = x
+        
+        self.tempo_latindo = 0
+        
+        self.tempo_correndo = 0
+        
+        self.olhando_gato = False
         
         #define qual lado o sprite começa (nesse caso, esqueda)
         self.virado_direita = True
@@ -30,6 +39,9 @@ class Cachorro:
         self.largura_frame_cao_latindo = 88 
         self.altura_frame_cao_latindo = 48
         
+        self.largura_frame_cao_correndo = 86 
+        self.altura_frame_cao_correndo = 51
+        
         self.total_frames = self.cao_andando.get_width() // self.largura_frame_cao_andando
         
     def atualizar(self, gato):
@@ -39,13 +51,57 @@ class Cachorro:
         
         self.distancia = abs(gato.x_gato - self.x_inimigo)
         
-        if self.distancia <= 150 and self.estado_cao != 'latindo':
+        if self.distancia <= 150 and self.estado_cao == 'patrulhando':
             self.estado_cao = 'latindo'
+            self.tempo_latindo = 15
             print('au')
             self.frame = 0
-        elif self.distancia > 150 and self.estado_cao != 'patrulhando':
+        elif self.distancia > 150 and self.estado_cao == 'latindo':
             self.estado_cao = 'patrulhando'
             self.frame = 0
+        
+        if self.estado_cao == 'latindo':
+            self.tempo_latindo -=1
+            if self.tempo_latindo <= 0:
+                self.estado_cao = 'correndo'
+                self.tempo_correndo = 30
+                self.frame = 0
+        
+        if self.estado_cao == 'correndo':
+            self.tempo_correndo -= 1            
+            if gato.x_gato > self.x_inimigo:
+                self.x_inimigo += 6
+                self.virado_direita = True
+            else:
+                self.x_inimigo -=6
+                self.virado_direita = False
+            
+            if self.virado_direita and gato.x_gato > self.x_inimigo:
+                self.olhando_gato = True
+            elif not self.virado_direita and gato.x_gato < self.x_inimigo:
+                self.olhando_gato = True
+            else:
+                self.olhando_gato = False
+            
+            if self.distancia <= 20 and self.olhando_gato:
+                if not gato.invulneravel:
+                    gato.tomar_dano()
+                self.estado_cao = 'retornando'
+                self.frame = 0
+            elif self.tempo_correndo <= 0:
+                self.estado_cao = 'retornando'
+                self.frame = 0
+        
+        if self.estado_cao == 'retornando':
+            if self.x_inimigo < self.x_retorno:
+                self.x_inimigo += 3
+                self.virado_direita = True
+            elif self.x_inimigo < self.x_retorno:
+                self.x_inimigo -= 3
+                self.virado_direita = False
+            if abs(self.x_inimigo - self.x_retorno) < 5:
+                self.x_inimigo = self.x_retorno
+                self.estado_cao = 'patrulhando'
         
         if self.estado_cao == 'patrulhando':
             self.x_inimigo += self.velocidade
@@ -71,6 +127,12 @@ class Cachorro:
             self.largura_frame_atual = self.largura_frame_cao_latindo
             self.altura_frame_atual = self.altura_frame_cao_latindo
             self.sprite_atual = self.cao_latindo
+        
+        elif self.estado_cao == 'correndo':
+            self.largura_frame_atual = self.largura_frame_cao_correndo
+            self.altura_frame_atual = self.altura_frame_cao_correndo
+            self.sprite_atual = self.cao_correndo
+        
         else:
             self.largura_frame_atual = self.largura_frame_cao_andando
             self.altura_frame_atual = self.altura_frame_cao_andando
