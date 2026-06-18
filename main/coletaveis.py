@@ -1,0 +1,28 @@
+"""
+Coletáveis do jogo Destelado são:
+1) O peixinho que ajuda o personagem do gatinho a sobreviver, ganhando uma vida;
+2) A bota, que aumenta a velocidade do personagem por 10 segundos;
+3) Catnip, a erva dos gatos, com ela o personagem dorme no jogo durante 5 segundos;
+4) Com o brinquero de lã, o gatinho ficará enroscado por 5 segundos, assim, ficand mais lento;
+
+Além do inventário e da barra de vida;
+"""
+
+import pygame as pg
+
+#class Inventario:
+#    def __init__(self,linha):
+#        self.linha = linha
+
+class Coletaveis:
+    def __init__(self, acao, valor, tempo):
+        self.acao = acao
+        self.valor = valor
+        self.tempo = tempo
+        self.imagem = pg.transform.scale(pg.image.load("assets/coletaveis/peixe_azul.png").convert_alpha(),(60,60))
+        self.rect = self.imagem.get_rect(topleft=(600, 300))
+        
+    def peixe(self, gato):
+        gato.vida_gato += 1
+        if gato.vida_gato > gato.vida_gato_max:
+            gato.vida_gato = gato.vida_gato_max

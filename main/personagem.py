@@ -11,13 +11,16 @@ class Personagem:
         self.ataque1 = pg.image.load('assets/Cat/Tilesets/Cat1_Attack1.png').convert_alpha()
         self.ataque2 = pg.image.load('assets/Cat/Tilesets/Cat1_Attack2.png').convert_alpha()
         self.dano_gato = pg.image.load('assets/Cat/Tilesets/Cat1_Hurt.png').convert_alpha()
-        
+        self.coracao_cheio = pg.image.load('assets/vida/coracao_cheio.png').convert_alpha()
+        self.coracao_vazio = pg.image.load('assets/vida/coracao_vazio.png').convert_alpha()
+
         self.frame = 0
         self.x_gato = 100
         self.y_gato = 300
         
         self.vida_gato = 7
-        
+        self.vida_gato_max = 7
+
         #flag para controlar a direção do gato
         self.virado_esquerda = False
         
@@ -88,7 +91,7 @@ class Personagem:
         #iniciar o pulo se 'w' ou seta para cima for pressionada e o gato não estiver pulando
         if (tecla[K_w] or tecla[K_UP]) and not self.pulando_agora:
             self.pulando_agora = True
-            self.velocidade_y = -12
+            self.velocidade_y = -15
             self.frame = 0
         
         #movimentação para a direita quando a tecla de seta para a direita ou 'd' for pressionada
@@ -201,6 +204,8 @@ class Personagem:
         janela.blit(self.frame_gato, (self.x_gato, self.y_gato + self.ajuste_y))
         #pg.display.flip()
 
+        self.barra_vida(janela) #Mostra a barra de vida
+
         self.frame += 1
     
     #função de dano do gato
@@ -210,3 +215,22 @@ class Personagem:
         self.invulneravel = True
         self.tempo_invulneravel = 60
         self.frame = 0
+
+     # Função para visualização das vidas do gato   
+    def barra_vida(self,janela):
+        tamanho_coracao = 46
+        espaco_entre_coracao = 0
+        x = 20 #Distância da borda esquerda
+        y = 20 #Distância do topo
+
+        vidas_atuais = self.vida_gato / self.vida_gato_max
+        for i in range(self.vida_gato_max):
+            coracao = x + i * (tamanho_coracao + espaco_entre_coracao)
+            if i < self.vida_gato:
+                imagem = self.coracao_cheio
+            else:
+                imagem = self.coracao_vazio
+            imagem_redimensionada = pg.transform.scale(imagem, (tamanho_coracao, tamanho_coracao))
+            janela.blit(imagem_redimensionada, (coracao, y)) # A imagem está sendo posta na tela do jogo
+
+        
