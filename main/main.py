@@ -36,14 +36,13 @@ while not sair:
     if not peixe_coletado and gato.rect.colliderect(peixe.rect): #Se o peixe ainda não foi coletado e o gato encostou nele
         peixe.peixe(gato)
         peixe_coletado = True #Define como coletado para impedir novas colisões e sumir com o peixe
-    if cao.cao_vivo and gato.rect.colliderect(cao.rect) and not gato.invulneravel:
+    if cao.cao_vivo and gato.gato_vivo and gato.rect.colliderect(cao.rect) and not gato.invulneravel:
         if gato.atacando_agora:
             cao.cao_vivo = False
-        
-        elif not gato.invulneravel:
+        elif not gato.pulando_agora:
             gato.tomar_dano()
-          
-    janela.fill((30,30,30)) #Limpa a tela quando o peixe for coletado
+
+    janela.fill((30,30,30))
      
     gato.desenhar(janela)
     cao.desenhar_cao(janela)

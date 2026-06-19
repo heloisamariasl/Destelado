@@ -11,6 +11,7 @@ class Personagem:
         self.ataque1 = pg.image.load('assets/Cat/Tilesets/Cat1_Attack1.png').convert_alpha()
         self.ataque2 = pg.image.load('assets/Cat/Tilesets/Cat1_Attack2.png').convert_alpha()
         self.dano_gato = pg.image.load('assets/Cat/Tilesets/Cat1_Hurt.png').convert_alpha()
+        self.gato_morrendo = pg.image.load('assets/Cat/Tilesets/Cat1_Death.png').convert_alpha()
         self.coracao_cheio = pg.image.load('assets/vida/coracao_cheio.png').convert_alpha()
         self.coracao_vazio = pg.image.load('assets/vida/coracao_vazio.png').convert_alpha()
 
@@ -20,6 +21,12 @@ class Personagem:
         
         self.vida_gato = 7
         self.vida_gato_max = 7
+        
+        self.gato_vivo = True
+        
+        self.velocidade_morte = 0
+        
+        self.contador_ani_pulo = 0
 
         #flag para controlar a direção do gato
         self.virado_esquerda = False
@@ -35,7 +42,7 @@ class Personagem:
         #variaveis para controlar o pulo
         self.pulando_agora = False
         self.velocidade_y = 0
-        self.gravidade = 3
+        self.gravidade = 2
         self.chao_y = 300
         
         #flag para ver se está atacando
@@ -64,6 +71,9 @@ class Personagem:
         self.largura_frame_dano = 64
         self.altura_frame_dano = 64
         
+        self.largura_frame_morte = 80
+        self.altura_frame_morte = 80
+        
     
     def eventos(self,event):
         #verifica se a tecla para ataque foi acionada    
@@ -84,25 +94,34 @@ class Personagem:
                 self.frame = 0
     
     def atualizar(self):
+        if not self.gato_vivo:
+            return
+        
         tecla = pg.key.get_pressed()
         
         self.andando_flag = False
         
+        self.velocidade_gato = 5
+        
+        if self.pulando_agora:
+            self.velocidade_gato = 15
+        
         #iniciar o pulo se 'w' ou seta para cima for pressionada e o gato não estiver pulando
         if (tecla[K_w] or tecla[K_UP]) and not self.pulando_agora:
             self.pulando_agora = True
-            self.velocidade_y = -15
+            self.velocidade_y = -12
             self.frame = 0
+            self.contador_ani_pulo = 0 
         
         #movimentação para a direita quando a tecla de seta para a direita ou 'd' for pressionada
         if tecla[K_RIGHT] or tecla[K_d]:
-            self.x_gato += 5
+            self.x_gato += self.velocidade_gato
             self.virado_esquerda = False
             self.andando_flag = True
-        
+                
         #movimentação para a esquerda quando a tecla de seta para a esquerda ou 'a' for pressionada
         if tecla[K_LEFT] or tecla[K_a]:
-            self.x_gato -= 5
+            self.x_gato -= self.velocidade_gato
             self.virado_esquerda = True
             self.andando_flag = True
                     
@@ -133,8 +152,13 @@ class Personagem:
         self.altura_frame_atual = self.altura_frame_parado
         self.ajuste_y = 0
 
+        if not self.gato_vivo:
+            self.sprite_atual = self.gato_morrendo
+            self.largura_frame_atual = self.largura_frame_morte
+            self.altura_frame_atual = self.altura_frame_morte
+        
         #atualiza o sprite para o dano
-        if self.tomando_dano:
+        elif self.tomando_dano:
             self.sprite_atual = self.dano_gato
             self.largura_frame_atual = self.largura_frame_dano
             self.altura_frame_atual = self.altura_frame_dano
@@ -145,6 +169,10 @@ class Personagem:
             self.largura_frame_atual = self.largura_frame_pulando
             self.altura_frame_atual = self.altura_frame_pulando
             self.ajuste_y = -16
+            
+            self.contador_ani_pulo +=1
+            if self.contador_ani_pulo %2 == 0:
+                self.frame -=1
         
         #atualiza o sprite para estado "atacando" verifica qual o ataque
         elif self.atacando_agora:
@@ -170,11 +198,23 @@ class Personagem:
             self.sprite_atual = self.andando
             self.largura_frame_atual = self.largura_frame_andando
             self.altura_frame_atual = self.altura_frame_andando
+            
         
         #calcula o número total de frames no sprite atual para controlar a animação
         #(os estados do gato têm diferentes quantidades de frames,
         #então usamos a largura do sprite para calcular quantos frames ele tem)
         self.total_frames = self.sprite_atual.get_width() // self.largura_frame_atual
+        
+        if not self.gato_vivo:
+            self.velocidade_morte +=1
+            if self.velocidade_morte >= 3:
+                if self.frame < self.total_frames-1:
+                    self.frame +=1
+                self.velocidade_morte = 0 
+                
+            self.frame_gato = self.sprite_atual.subsurface(self.frame*self.largura_frame_atual, 0, self.largura_frame_atual, self.altura_frame_atual)
+            janela.blit(self.frame_gato,(self.x_gato, self.y_gato-15))
+            return
         
         #encerrar o estado de ataque quando a animação de ataque terminar
         if self.atacando_agora:
@@ -186,7 +226,7 @@ class Personagem:
             if self.frame >= self.total_frames-1:
                 self.tomando_dano = False
                 self.frame = 0
-        
+              
         #reseta para 0 quando chega no último frame
         if self.frame >= self.total_frames:
             self.frame = 0
@@ -205,12 +245,29 @@ class Personagem:
         #pg.display.flip()
 
         self.barra_vida(janela) #Mostra a barra de vida
-
-        self.frame += 1
+        
+        if not self.gato_vivo:
+            if self.frame < self.total_frames-1:
+                self.frame += 1
+            else:
+                self.frame = self.total_frames-1             
+        else:
+            self.frame +=1
     
     #função de dano do gato
     def tomar_dano(self):
+        if not self.gato_vivo:
+            return
+        
         self.vida_gato -=1
+        if self.vida_gato <= 0:
+            self.gato_vivo = False
+            self.tomando_dano = False
+            self.atacando_agora = False
+            self.pulando_agora = False
+            self.frame = 0
+            return
+        
         self.tomando_dano = True
         self.invulneravel = True
         self.tempo_invulneravel = 60
@@ -232,5 +289,3 @@ class Personagem:
                 imagem = self.coracao_vazio
             imagem_redimensionada = pg.transform.scale(imagem, (tamanho_coracao, tamanho_coracao))
             janela.blit(imagem_redimensionada, (coracao, y)) # A imagem está sendo posta na tela do jogo
-
-        

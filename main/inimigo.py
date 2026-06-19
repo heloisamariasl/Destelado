@@ -21,6 +21,9 @@ class Cachorro:
         
         self.olhando_gato = False
         
+        self.direcao_ataque = 1
+    
+        
         #define qual lado o sprite começa (nesse caso, esqueda)
         self.virado_direita = True
         self.velocidade = 3
@@ -49,32 +52,39 @@ class Cachorro:
         if not self.cao_vivo:
             return
         
-        self.distancia = abs(gato.x_gato - self.x_inimigo)
+        self.centro_gato = gato.x_gato + gato.rect.width // 2
+        self.centro_cao = self.x_inimigo + self.largura_frame_cao_andando // 2
         
-        if self.distancia <= 150 and self.estado_cao == 'patrulhando':
+        self.distancia_x = abs(self.centro_gato - self.centro_cao)
+                
+        if self.distancia_x <= 150 and (self.estado_cao == 'patrulhando' or self.estado_cao == 'retornando') and gato.gato_vivo:
+            if gato.x_gato > self.x_inimigo:
+                self.virado_direita = True
+            else:
+                self.virado_direita = False
             self.estado_cao = 'latindo'
             self.tempo_latindo = 15
-            print('au')
             self.frame = 0
-        elif self.distancia > 150 and self.estado_cao == 'latindo':
+        elif self.distancia_x > 150 and self.estado_cao == 'latindo' and gato.gato_vivo:
             self.estado_cao = 'patrulhando'
             self.frame = 0
         
         if self.estado_cao == 'latindo':
             self.tempo_latindo -=1
             if self.tempo_latindo <= 0:
+                if gato.x_gato > self.x_inimigo:
+                    self.direcao_ataque = 1
+                    self.virado_direita = True
+                else:
+                    self.direcao_ataque = -1
+                    self.virado_direita = False
                 self.estado_cao = 'correndo'
                 self.tempo_correndo = 30
                 self.frame = 0
         
         if self.estado_cao == 'correndo':
             self.tempo_correndo -= 1            
-            if gato.x_gato > self.x_inimigo:
-                self.x_inimigo += 6
-                self.virado_direita = True
-            else:
-                self.x_inimigo -=6
-                self.virado_direita = False
+            self.x_inimigo +=6 * self.direcao_ataque
             
             if self.virado_direita and gato.x_gato > self.x_inimigo:
                 self.olhando_gato = True
@@ -83,7 +93,7 @@ class Cachorro:
             else:
                 self.olhando_gato = False
             
-            if self.distancia <= 20 and self.olhando_gato:
+            if self.distancia_x <= 20 and self.olhando_gato and not gato.pulando_agora:
                 if not gato.invulneravel:
                     gato.tomar_dano()
                 self.estado_cao = 'retornando'
@@ -96,7 +106,7 @@ class Cachorro:
             if self.x_inimigo < self.x_retorno:
                 self.x_inimigo += 3
                 self.virado_direita = True
-            elif self.x_inimigo < self.x_retorno:
+            elif self.x_inimigo > self.x_retorno:
                 self.x_inimigo -= 3
                 self.virado_direita = False
             if abs(self.x_inimigo - self.x_retorno) < 5:
