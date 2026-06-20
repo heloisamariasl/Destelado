@@ -48,7 +48,7 @@ python main/main.py
 ## 👥 Desenvolvido por
 - [Ana Maria Ribeiro](https://github.com/anaribeirowxz)
 - [David Sales](https://github.com/davdsales)
-- [Heloísa Maria](https://github.com/heloisamariasl)
+- [Heloisa Leite](https://github.com/heloisamariasl)
 - [Maria Gabriela](https://github.com/mghsgab)
 - [Kailani Yoná](https://github.com/Kailaniyona)
 ---
