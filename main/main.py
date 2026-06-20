@@ -1,7 +1,7 @@
 import pygame as pg
 from personagem import Personagem
 from inimigo import Cachorro
-from coletaveis import Coletaveis
+from coletaveis import Peixe, Novelo
 
 pg.init()
 janela = pg.display.set_mode((800, 600))
@@ -15,10 +15,13 @@ cao = Cachorro(400,306,100,500)
 
 #Coletável 
 #peixe
-peixe = Coletaveis("peixe", 1, 0) # acao é 'peixe', valor é 1, e tempo é 0
+peixe = Peixe((600, 300)) 
+#Novelo
+novelo = Novelo((300, 300))
 
 sair = False
 peixe_coletado = False
+novelo_coletado = False
 
 while not sair:
     for event in pg.event.get():
@@ -51,11 +54,16 @@ while not sair:
             pg.display.flip()
 
             continue        
-
-    
+    if gato.enrolado:
+        tempo_atual = pg.time.get_ticks()
+        if tempo_atual - gato.tempo_enrolado >= gato.duracao_enrolado:
+            gato.enrolado = False
     if not peixe_coletado and gato.rect.colliderect(peixe.rect): #Se o peixe ainda não foi coletado e o gato encostou nele
-        peixe.peixe(gato)
+        peixe.acao(gato)
         peixe_coletado = True #Define como coletado para impedir novas colisões e sumir com o peixe
+    if not novelo_coletado and gato.rect.colliderect(novelo.rect):
+        novelo.acao(gato)
+        novelo_coletado = True
     if cao.cao_vivo and gato.gato_vivo and gato.rect.colliderect(cao.rect) and not gato.invulneravel:
         if gato.atacando_agora:
             cao.cao_vivo = False
@@ -68,6 +76,8 @@ while not sair:
     cao.desenhar_cao(janela)
     if not peixe_coletado: #Se o peixe não for coletado ele continua no mesmo lugar 
         janela.blit(peixe.imagem, peixe.rect)
+    if not novelo_coletado:
+        janela.blit(novelo.imagem, novelo.rect)
 
     pg.display.flip()
         
