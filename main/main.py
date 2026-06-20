@@ -29,9 +29,29 @@ while not sair:
             if event.key == pg.K_ESCAPE:
                 sair = True
         
+        if not gato.gato_vivo:
+            if event.key == pg.K_y:
+                gato = Personagem()
+                cao = Cachorro(400,306,100,500)
+                peixe_coletado = False
+        
         gato.eventos(event)
     gato.atualizar()
     cao.atualizar(gato)
+    
+    if not gato.gato_vivo:
+        tempo_atual = pg.time.get_ticks()
+        if tempo_atual - gato.tempo_morte >= 3000:
+            janela.fill((0,0,0))
+
+            fonte = pg.font.Font(None,50)
+            texto = fonte.render("Deseja reiniciar? (Y) Sim (ESC) Sair", True,(255,255,255))
+
+            janela.blit(texto,(100,255)) 
+            pg.display.flip()
+
+            continue        
+
     
     if not peixe_coletado and gato.rect.colliderect(peixe.rect): #Se o peixe ainda não foi coletado e o gato encostou nele
         peixe.peixe(gato)
