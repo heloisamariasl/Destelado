@@ -218,7 +218,7 @@ class Personagem:
                 self.altura_frame_atual = self.altura_frame_ataque2
                 self.ajuste_y = -16
         
-        elif self.correndo_flag:
+        elif self.correndo_flag and self.andando_flag:
             self.sprite_atual = self.gato_correndo
             self.largura_frame_atual = self.largura_frame_correndo
             self.altura_frame_atual = self.altura_frame_correndo
