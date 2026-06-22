@@ -48,3 +48,31 @@ class Coletaveis:
 
         # duração do efeito em milissegundos
         gato.duracao_enrolado = self.tempo * 1000
+
+
+class Bota:
+    def __init__(self):
+        self.tempo = 10  # duração do efeito em segundos
+
+        self.imagem = pg.transform.scale(
+            pg.image.load("assets/coletaveis/bota.png").convert_alpha(),
+            (60, 60)
+        )
+
+        self.rect = self.imagem.get_rect(topleft=(600, 300))
+
+    def aplicar_efeito(self, gato):
+        # guarda a velocidade original
+        gato.velocidade_original = gato.velocidade
+
+        # aumenta a velocidade em 50%
+        gato.velocidade *= 1.5
+
+        # ativa o efeito
+        gato.bota_ativa = True
+
+        # registra o momento da coleta
+        gato.tempo_bota = pg.time.get_ticks()
+
+        # converte segundos para milissegundos
+        gato.duracao_bota = self.tempo * 1000
