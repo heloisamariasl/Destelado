@@ -26,6 +26,8 @@ class Personagem:
         
         self.velocidade_morte = 0
         
+        self.tempo_morte = 0
+        
         self.contador_ani_pulo = 0
 
         #flag para controlar a direção do gato
@@ -74,6 +76,10 @@ class Personagem:
         self.largura_frame_morte = 80
         self.altura_frame_morte = 80
         
+        #Novelo
+        self.enrolado = False
+        self.tempo_enrolado = 0
+        self.duracao_enrolado = 0
     
     def eventos(self,event):
         #verifica se a tecla para ataque foi acionada    
@@ -104,7 +110,10 @@ class Personagem:
         self.velocidade_gato = 5
         
         if self.pulando_agora:
-            self.velocidade_gato = 15
+            self.velocidade_gato = 10
+        
+        if self.enrolado:
+            self.velocidade_gato *= 0.5
         
         #iniciar o pulo se 'w' ou seta para cima for pressionada e o gato não estiver pulando
         if (tecla[K_w] or tecla[K_UP]) and not self.pulando_agora:
@@ -265,6 +274,7 @@ class Personagem:
             self.tomando_dano = False
             self.atacando_agora = False
             self.pulando_agora = False
+            self.tempo_morte = pg.time.get_ticks()
             self.frame = 0
             return
         
