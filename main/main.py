@@ -4,20 +4,25 @@ from inimigo import Cachorro
 from coletaveis import Peixe, Novelo
 
 pg.init()
+
 janela = pg.display.set_mode((800, 600))
 pg.display.set_caption("Destelado")
+
+fundo = pg.image.load("assets/cenário/background.png").convert()
+fundo = pg.transform.scale(fundo, (800, 600))
+print(fundo.get_size())
 
 #controlar a velocidade de atualização do personagem
 clock = pg.time.Clock()
 
 gato = Personagem()
-cao = Cachorro(400,306,100,500)
+cao = Cachorro(400,466,100,500)
 
 #Coletável 
 #peixe
-peixe = Peixe((600, 300)) 
+peixe = Peixe((600, 460)) 
 #Novelo
-novelo = Novelo((300, 300))
+novelo = Novelo((300, 465))
 
 sair = False
 peixe_coletado = False
@@ -35,7 +40,7 @@ while not sair:
         if not gato.gato_vivo:
             if event.key == pg.K_y:
                 gato = Personagem()
-                cao = Cachorro(400,306,100,500)
+                cao = Cachorro(400,466,100,500)
                 peixe_coletado = False
         
         gato.eventos(event)
@@ -70,7 +75,7 @@ while not sair:
         elif not gato.pulando_agora:
             gato.tomar_dano()
 
-    janela.fill((30,30,30))
+    janela.blit(fundo,(0,0))
      
     gato.desenhar(janela)
     cao.desenhar_cao(janela)

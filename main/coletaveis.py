@@ -12,7 +12,7 @@ class Coletaveis:
     def __init__(self, caminho_imagem, posicao, valor= 0, tempo = 0):
         self.valor = valor
         self.tempo = tempo
-        self.imagem = pg.transform.scale(pg.image.load(caminho_imagem).convert_alpha(), (60, 60))
+        self.imagem = pg.transform.scale(pg.image.load(caminho_imagem).convert_alpha(), (50, 50))
         self.rect = self.imagem.get_rect(topleft=posicao)
 
     def acao(self,gato):#Cada classe que representa um coletável decide qual a sua ação e efeito para o personagem
@@ -30,6 +30,9 @@ class Peixe(Coletaveis):
 class Novelo(Coletaveis):
     def __init__(self, posicao, tempo=5):
         super().__init__("assets/coletaveis/novelo.png", posicao, tempo=tempo)
+        
+        self.imagem = pg.transform.scale(self.imagem, (30,30))
+        self.rect = self.imagem.get_rect(topleft=posicao)
 
     def acao(self, gato):
         # ativa o efeito

@@ -17,7 +17,7 @@ class Personagem:
 
         self.frame = 0
         self.x_gato = 100
-        self.y_gato = 300
+        self.y_gato = 460
         
         self.vida_gato = 7
         self.vida_gato_max = 7
@@ -45,7 +45,7 @@ class Personagem:
         self.pulando_agora = False
         self.velocidade_y = 0
         self.gravidade = 2
-        self.chao_y = 300
+        self.chao_y = 460
         
         #flag para ver se está atacando
         self.atacando_agora = False
