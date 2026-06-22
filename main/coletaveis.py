@@ -46,7 +46,7 @@ class Novelo(Coletaveis):
 
 
 class Bota(Coletaveis):
-    def __init__(self):
+    def __init__(self,posicao, tempo=3):
         self.tempo = 10  # duração do efeito em segundos
 
         self.imagem = pg.transform.scale(
@@ -54,20 +54,14 @@ class Bota(Coletaveis):
             (60, 60)
         )
 
-        self.rect = self.imagem.get_rect(topleft=(600, 300))
+        self.rect = self.imagem.get_rect(topleft=posicao)
 
     def acao(self, gato):
-        # guarda a velocidade original
-        gato.velocidade_original = gato.velocidade
-
-        # aumenta a velocidade em 50%
-        gato.velocidade *= 1.5
-
+              
+        gato.correndo_flag = True
         # ativa o efeito
         gato.bota_ativa = True
-
         # registra o momento da coleta
         gato.tempo_bota = pg.time.get_ticks()
-
         # converte segundos para milissegundos
         gato.duracao_bota = self.tempo * 1000

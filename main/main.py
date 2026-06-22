@@ -1,7 +1,7 @@
 import pygame as pg
 from personagem import Personagem
 from inimigo import Cachorro
-from coletaveis import Peixe, Novelo
+from coletaveis import Peixe, Novelo, Bota
 
 pg.init()
 
@@ -10,7 +10,6 @@ pg.display.set_caption("Destelado")
 
 fundo = pg.image.load("assets/cenário/background.png").convert()
 fundo = pg.transform.scale(fundo, (800, 600))
-print(fundo.get_size())
 
 #controlar a velocidade de atualização do personagem
 clock = pg.time.Clock()
@@ -24,9 +23,12 @@ peixe = Peixe((600, 460))
 #Novelo
 novelo = Novelo((300, 465))
 
+bota = Bota((150,460))
+
 sair = False
 peixe_coletado = False
 novelo_coletado = False
+bota_coletada = False
 
 while not sair:
     for event in pg.event.get():
@@ -42,6 +44,8 @@ while not sair:
                 gato = Personagem()
                 cao = Cachorro(400,466,100,500)
                 peixe_coletado = False
+                bota_coletada = False
+                novelo_coletado = False
         
         gato.eventos(event)
     gato.atualizar()
@@ -69,12 +73,21 @@ while not sair:
     if not novelo_coletado and gato.rect.colliderect(novelo.rect):
         novelo.acao(gato)
         novelo_coletado = True
+    if not bota_coletada and gato.rect.colliderect(bota.rect):
+        bota.acao(gato)
+        bota_coletada = True
     if cao.cao_vivo and gato.gato_vivo and gato.rect.colliderect(cao.rect) and not gato.invulneravel:
         if gato.atacando_agora:
             cao.cao_vivo = False
         elif not gato.pulando_agora:
             gato.tomar_dano()
-
+    
+    if gato.correndo_flag:
+        tempo_atual = pg.time.get_ticks()
+        if tempo_atual - gato.tempo_bota >= gato.duracao_bota:
+            gato.correndo_flag = False
+            gato.velocidade_atual = gato.velocidade
+        
     janela.blit(fundo,(0,0))
      
     gato.desenhar(janela)
@@ -83,6 +96,8 @@ while not sair:
         janela.blit(peixe.imagem, peixe.rect)
     if not novelo_coletado:
         janela.blit(novelo.imagem, novelo.rect)
+    if not bota_coletada:
+        janela.blit(bota.imagem, bota.rect)
 
     pg.display.flip()
         

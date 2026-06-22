@@ -12,12 +12,15 @@ class Personagem:
         self.ataque2 = pg.image.load('assets/Cat/Tilesets/Cat1_Attack2.png').convert_alpha()
         self.dano_gato = pg.image.load('assets/Cat/Tilesets/Cat1_Hurt.png').convert_alpha()
         self.gato_morrendo = pg.image.load('assets/Cat/Tilesets/Cat1_Death.png').convert_alpha()
+        self.gato_correndo = pg.image.load('assets/Cat/Tilesets/Cat1_Running.png').convert_alpha()
         self.coracao_cheio = pg.image.load('assets/vida/coracao_cheio.png').convert_alpha()
         self.coracao_vazio = pg.image.load('assets/vida/coracao_vazio.png').convert_alpha()
 
         self.frame = 0
         self.x_gato = 100
         self.y_gato = 460
+        
+        self.velocidade = 5
         
         self.vida_gato = 7
         self.vida_gato_max = 7
@@ -35,6 +38,11 @@ class Personagem:
         
         #flag para ver se está andando
         self.andando_flag = False
+        
+        #flag para ver se está andando
+        self.correndo_flag = False
+        self.tempo_bota = 0
+        self.duracao_bota = 0
         
         #variaveis para dano
         self.tomando_dano = False
@@ -75,6 +83,9 @@ class Personagem:
         
         self.largura_frame_morte = 80
         self.altura_frame_morte = 80
+
+        self.largura_frame_correndo = 48
+        self.altura_frame_correndo = 64
         
         #Novelo
         self.enrolado = False
@@ -106,14 +117,19 @@ class Personagem:
         tecla = pg.key.get_pressed()
         
         self.andando_flag = False
+        self.velocidade_atual = self.velocidade
         
-        self.velocidade_gato = 5
+        if self.correndo_flag:
+            self.velocidade_atual = self.velocidade*1.5
         
-        if self.pulando_agora:
-            self.velocidade_gato = 10
+        elif self.pulando_agora:
+            self.velocidade_atual = self.velocidade*2
         
-        if self.enrolado:
-            self.velocidade_gato *= 0.5
+        elif self.enrolado:
+            self.velocidade_atual = self.velocidade*0.5
+        
+        else:
+            self.velocidade = self.velocidade_atual
         
         #iniciar o pulo se 'w' ou seta para cima for pressionada e o gato não estiver pulando
         if (tecla[K_w] or tecla[K_UP]) and not self.pulando_agora:
@@ -124,13 +140,13 @@ class Personagem:
         
         #movimentação para a direita quando a tecla de seta para a direita ou 'd' for pressionada
         if tecla[K_RIGHT] or tecla[K_d]:
-            self.x_gato += self.velocidade_gato
+            self.x_gato += self.velocidade_atual
             self.virado_esquerda = False
             self.andando_flag = True
                 
         #movimentação para a esquerda quando a tecla de seta para a esquerda ou 'a' for pressionada
         if tecla[K_LEFT] or tecla[K_a]:
-            self.x_gato -= self.velocidade_gato
+            self.x_gato -= self.velocidade_atual
             self.virado_esquerda = True
             self.andando_flag = True
                     
@@ -202,12 +218,17 @@ class Personagem:
                 self.altura_frame_atual = self.altura_frame_ataque2
                 self.ajuste_y = -16
         
+        elif self.correndo_flag:
+            self.sprite_atual = self.gato_correndo
+            self.largura_frame_atual = self.largura_frame_correndo
+            self.altura_frame_atual = self.altura_frame_correndo
+
         #atualiza o sprite para estado de andando    
         elif self.andando_flag:
             self.sprite_atual = self.andando
             self.largura_frame_atual = self.largura_frame_andando
             self.altura_frame_atual = self.altura_frame_andando
-            
+        
         
         #calcula o número total de frames no sprite atual para controlar a animação
         #(os estados do gato têm diferentes quantidades de frames,
