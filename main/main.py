@@ -2,6 +2,7 @@ import pygame as pg
 from personagem import Personagem
 from inimigo import Cachorro
 from coletaveis import Peixe, Novelo, Bota
+from blocos import Bloco
 
 pg.init()
 
@@ -16,6 +17,22 @@ clock = pg.time.Clock()
 
 gato = Personagem()
 cao = Cachorro(400,466,100,500)
+
+bloco_grande = Bloco(
+    "assets/cenário/bloco_grande.png",
+    250,
+    350,
+    200,
+    200
+)
+
+bloco_pequeno = Bloco(
+    "assets/cenário/bloco_pequeno.png",
+    200,
+    450,
+    100,
+    70
+)
 
 #Coletável 
 #peixe
@@ -89,7 +106,10 @@ while not sair:
             gato.velocidade_atual = gato.velocidade
         
     janela.blit(fundo,(0,0))
-     
+
+    bloco_grande.desenhar(janela)
+    bloco_pequeno.desenhar(janela)
+
     gato.desenhar(janela)
     cao.desenhar_cao(janela)
     if not peixe_coletado: #Se o peixe não for coletado ele continua no mesmo lugar 
