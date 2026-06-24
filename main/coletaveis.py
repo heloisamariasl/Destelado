@@ -7,6 +7,13 @@ Coletáveis do jogo Destelado são:
 """
 
 import pygame as pg
+import random
+
+def posicao_aleatoria():
+    x = random.randint(50, 750)
+    y = 460
+    return(x,y)
+    
 
 class Coletaveis:
     def __init__(self, caminho_imagem, posicao, valor= 0, tempo = 0):
@@ -19,7 +26,9 @@ class Coletaveis:
         pass
 
 class Peixe(Coletaveis):
-    def __init__(self, posicao):
+    def __init__(self, posicao = None):
+        if posicao is None:
+            posicao = posicao_aleatoria()
         super().__init__("assets/coletaveis/peixe.png", posicao)
 
     def acao(self, gato):
@@ -28,11 +37,14 @@ class Peixe(Coletaveis):
             gato.vida_gato = gato.vida_gato_max
 
 class Novelo(Coletaveis):
-    def __init__(self, posicao, tempo=5):
+    def __init__(self, posicao = None, tempo=5):
+        if posicao is None:
+            posicao = posicao_aleatoria()
         super().__init__("assets/coletaveis/novelo.png", posicao, tempo=tempo)
         
         self.imagem = pg.transform.scale(self.imagem, (30,30))
         self.rect = self.imagem.get_rect(topleft=posicao)
+        self.rect.y += 20
 
     def acao(self, gato):
         # ativa o efeito
@@ -46,7 +58,9 @@ class Novelo(Coletaveis):
 
 
 class Bota(Coletaveis):
-    def __init__(self,posicao, tempo=3):
+    def __init__(self,posicao = None, tempo=3):
+        if posicao is None:
+            posicao = posicao_aleatoria()
         self.tempo = 10  # duração do efeito em segundos
 
         self.imagem = pg.transform.scale(
