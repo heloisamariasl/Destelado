@@ -1,4 +1,5 @@
 import pygame as pg
+import random
 from personagem import Personagem
 from inimigo import Cachorro
 from coletaveis import Peixe, Novelo, Bota
@@ -34,13 +35,10 @@ bloco_pequeno = Bloco(
     70
 )
 
-#Coletável 
-#peixe
-peixe = Peixe((600, 460)) 
-#Novelo
-novelo = Novelo((300, 465))
-
-bota = Bota((150,460))
+#Coletável de maneira aleatória e intercalável para que não fique um muito próximo do outro
+tipos_coletaveis = [Peixe, Novelo, Bota]  
+coletaveis = []  
+proximo = pg.time.get_ticks() + random.randint(3000, 7000) 
 
 sair = False
 peixe_coletado = False
@@ -60,6 +58,7 @@ while not sair:
             if event.key == pg.K_y:
                 gato = Personagem()
                 cao = Cachorro(400,466,100,500)
+                coletaveis = [Peixe(), Novelo(), Bota()]
                 peixe_coletado = False
                 bota_coletada = False
                 novelo_coletado = False
@@ -67,6 +66,12 @@ while not sair:
         gato.eventos(event)
     gato.atualizar()
     cao.atualizar(gato)
+
+    tempo_atual = pg.time.get_ticks()
+    if tempo_atual >= proximo:
+        tipo = random.choice(tipos_coletaveis)
+        coletaveis.append(tipo())
+        proximo = tempo_atual + random.randint(3000, 7000)
     
     if not gato.gato_vivo:
         tempo_atual = pg.time.get_ticks()
@@ -80,19 +85,11 @@ while not sair:
             pg.display.flip()
 
             continue        
-    if gato.enrolado:
-        tempo_atual = pg.time.get_ticks()
-        if tempo_atual - gato.tempo_enrolado >= gato.duracao_enrolado:
-            gato.enrolado = False
-    if not peixe_coletado and gato.rect.colliderect(peixe.rect): #Se o peixe ainda não foi coletado e o gato encostou nele
-        peixe.acao(gato)
-        peixe_coletado = True #Define como coletado para impedir novas colisões e sumir com o peixe
-    if not novelo_coletado and gato.rect.colliderect(novelo.rect):
-        novelo.acao(gato)
-        novelo_coletado = True
-    if not bota_coletada and gato.rect.colliderect(bota.rect):
-        bota.acao(gato)
-        bota_coletada = True
+    for coletavel in coletaveis[:]:
+        if gato.rect.colliderect(coletavel.rect):
+            coletavel.acao(gato)
+            coletaveis.remove(coletavel)
+
     if cao.cao_vivo and gato.gato_vivo and gato.rect.colliderect(cao.rect) and not gato.invulneravel:
         if gato.atacando_agora:
             cao.cao_vivo = False
@@ -112,13 +109,9 @@ while not sair:
 
     gato.desenhar(janela)
     cao.desenhar_cao(janela)
-    if not peixe_coletado: #Se o peixe não for coletado ele continua no mesmo lugar 
-        janela.blit(peixe.imagem, peixe.rect)
-    if not novelo_coletado:
-        janela.blit(novelo.imagem, novelo.rect)
-    if not bota_coletada:
-        janela.blit(bota.imagem, bota.rect)
-
+    for coletavel in coletaveis:
+        janela.blit(coletavel.imagem, coletavel.rect)
+   
     pg.display.flip()
         
     clock.tick(15)
