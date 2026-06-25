@@ -19,18 +19,11 @@ clock = pg.time.Clock()
 gato = Personagem()
 cao = Cachorro(400,466,100,500)
 
-bloco_grande = Bloco(
-    "assets/cenário/bloco_grande.png",
-    250,
-    350,
-    200,
-    200
-)
 
 bloco_pequeno = Bloco(
     "assets/cenário/bloco_pequeno.png",
     200,
-    450,
+    440,
     100,
     70
 )
@@ -65,7 +58,19 @@ while not sair:
         
         gato.eventos(event)
     gato.atualizar()
+
+    # colisão com o bloco
+    if gato.rect.colliderect(bloco_pequeno.rect):
+        if gato.velocidade_y >= 0:
+            gato.y_gato = bloco_pequeno.rect.top - 64
+            gato.chao_y = bloco_pequeno.rect.top - 64
+            gato.velocidade_y = 0
+            gato.pulando_agora = False
+    else:
+        gato.chao_y = 460
+
     cao.atualizar(gato)
+
 
     tempo_atual = pg.time.get_ticks()
     if tempo_atual >= proximo:
@@ -104,7 +109,6 @@ while not sair:
         
     janela.blit(fundo,(0,0))
 
-    bloco_grande.desenhar(janela)
     bloco_pequeno.desenhar(janela)
 
     gato.desenhar(janela)
