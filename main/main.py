@@ -181,6 +181,7 @@ while not sair:
     # colisão com cachorros
     for cao in caes:
         if cao.cao_vivo and gato.gato_vivo and gato.rect.colliderect(cao.rect) and not gato.invulneravel:
+
             if gato.atacando_agora:
                 cao.cao_vivo = False
             elif not gato.pulando_agora:

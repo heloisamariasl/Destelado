@@ -77,10 +77,15 @@ class Cachorro:
             )
 
             if self.distancia_x <= 20 and self.olhando_gato and not gato.pulando_agora:
+                if gato.rect.bottom < self.rect.top + 10:
+                    return
+                
                 if not gato.invulneravel:
                     gato.tomar_dano()
+                
                 self.estado_cao = 'retornando'
                 self.frame = 0
+            
             elif self.tempo_correndo <= 0:
                 self.estado_cao = 'retornando'
                 self.frame = 0
