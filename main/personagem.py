@@ -44,7 +44,7 @@ class Personagem:
         self.pulando_agora = False
         self.no_chao = True
         self.velocidade_y = 0
-        self.gravidade = 1
+        self.gravidade = 2
         self.chao_y = 460
  
         self.atacando_agora = False
@@ -118,7 +118,7 @@ class Personagem:
         if (tecla[K_w] or tecla[K_UP]) and self.no_chao:
             self.pulando_agora = True
             self.no_chao = False
-            self.velocidade_y = -15
+            self.velocidade_y = -17
             self.frame = 0
             self.contador_ani_pulo = 0
  
@@ -133,7 +133,7 @@ class Personagem:
             self.andando_flag = True
  
         self.velocidade_y += self.gravidade
-        self.y_gato += self.velocidade_y
+        self.y_gato += self.velocidade_y           
  
         if self.y_gato >= self.chao_y:
             self.y_gato = self.chao_y
