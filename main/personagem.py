@@ -14,7 +14,8 @@ class Personagem:
         self.gato_correndo = pg.image.load('assets/Cat/Tilesets/Cat1_Running.png').convert_alpha()
         self.coracao_cheio = pg.image.load('assets/vida/coracao_cheio.png').convert_alpha()
         self.coracao_vazio = pg.image.load('assets/vida/coracao_vazio.png').convert_alpha()
- 
+    
+
         self.frame = 0
         self.x_gato = 100
         self.y_gato = 460
@@ -40,6 +41,14 @@ class Personagem:
         self.tomando_dano = False
         self.invulneravel = False
         self.tempo_invulneravel = 0
+
+        self.dormindo = False
+        self.tempo_dormindo = 0
+        self.duracao_dormindo = 0
+
+        if self.dormindo:
+            return
+
  
         self.pulando_agora = False
         self.no_chao = True

@@ -2,7 +2,7 @@ import pygame as pg
 import random
 from personagem import Personagem
 from inimigo import Cachorro
-from coletaveis import Peixe, Novelo, Bota
+from coletaveis import Peixe, Novelo, Bota, Catnip 
 from blocos import Bloco
 
 pg.init()
@@ -49,7 +49,7 @@ blocos = [Bloco("assets/cenário/bloco_pequeno.png", x, y, w, h) for x, y, w, h 
 # ponto de chegada (bandeira / fim do nível)
 x_fim = LARGURA_MUNDO - 100
 
-tipos_coletaveis = [Peixe, Novelo, Bota]
+tipos_coletaveis = [Peixe, Novelo, Bota, Catnip]
 coletaveis = []
 proximo = pg.time.get_ticks() + random.randint(3000, 7000)
 

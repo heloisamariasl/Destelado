@@ -58,10 +58,11 @@ class Novelo(Coletaveis):
 
 
 class Bota(Coletaveis):
-    def __init__(self,posicao = None, tempo=3):
+    def __init__(self, posicao=None, tempo=3):
         if posicao is None:
             posicao = posicao_aleatoria()
-        self.tempo = 10  # duração do efeito em segundos
+
+        self.tempo = 10
 
         self.imagem = pg.transform.scale(
             pg.image.load("assets/coletaveis/bota.png").convert_alpha(),
@@ -71,11 +72,24 @@ class Bota(Coletaveis):
         self.rect = self.imagem.get_rect(topleft=posicao)
 
     def acao(self, gato):
-              
         gato.correndo_flag = True
-        # ativa o efeito
         gato.bota_ativa = True
-        # registra o momento da coleta
         gato.tempo_bota = pg.time.get_ticks()
-        # converte segundos para milissegundos
         gato.duracao_bota = self.tempo * 1000
+
+
+class Catnip(Coletaveis):
+    def __init__(self, posicao=None, tempo=5):
+        if posicao is None:
+            posicao = posicao_aleatoria()
+
+        super().__init__(
+            "assets/coletaveis/catnip.png",
+            posicao,
+            tempo=tempo
+        )
+
+    def acao(self, gato):
+        gato.dormindo = True
+        gato.tempo_dormindo = pg.time.get_ticks()
+        gato.duracao_dormindo = self.tempo * 1000
