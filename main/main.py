@@ -4,6 +4,7 @@ from personagem import Personagem
 from inimigo import Cachorro
 from coletaveis import Peixe, Novelo, Bota, Catnip 
 from blocos import Bloco
+from menu import MenuPrincipal
 
 pg.init()
 
@@ -14,6 +15,10 @@ CHAO_PADRAO = 460
 
 janela = pg.display.set_mode((LARGURA_TELA, ALTURA_TELA))
 pg.display.set_caption("Destelado")
+
+# menu
+menu = MenuPrincipal(janela)
+estado = "menu"
 
 fundo = pg.image.load("assets/cenário/background.png").convert()
 fundo = pg.transform.scale(fundo, (LARGURA_TELA, ALTURA_TELA))
@@ -58,6 +63,21 @@ nivel_completo = False
 
 while not sair:
     for event in pg.event.get():
+
+        if event.type == pg.QUIT:
+            sair = True
+
+        if estado == "menu":
+            acao = menu.tratar_eventos(event)
+
+            if acao == "jogar":
+                estado = "jogo"
+            elif acao == "opcoes":
+                print("Abrir opções")
+            elif acao == "sair":
+                sair = True
+            continue
+
         if event.type == pg.QUIT:
             sair = True
 
@@ -94,6 +114,12 @@ while not sair:
         gato.eventos(event)
 
     # ── câmera centralizada no gato, limitada às bordas do mundo ────────────
+    if estado == "menu":
+        menu.desenhar()
+        pg.display.flip()
+        clock.tick(60)
+        continue
+
     camera_x = gato.x_gato - LARGURA_TELA // 2
     camera_x = max(0, min(camera_x, LARGURA_MUNDO - LARGURA_TELA))
     # ────────────────────────────────────────────────────────────────────────
@@ -193,6 +219,18 @@ while not sair:
         if tempo_atual - gato.tempo_bota >= gato.duracao_bota:
             gato.correndo_flag = False
             gato.velocidade_atual = gato.velocidade
+
+    # expirar catnip
+    if gato.dormindo:
+        tempo_atual = pg.time.get_ticks()
+        if tempo_atual - gato.tempo_dormindo >= gato.duracao_dormindo:
+            gato.dormindo = False
+
+    # expirar novelo
+    if gato.enrolado:
+        tempo_atual = pg.time.get_ticks()
+        if tempo_atual - gato.tempo_enrolado >= gato.duracao_enrolado:
+            gato.enrolado = False
 
     # ── Desenho (tudo deslocado por camera_x) ───────────────────────────────
     # fundo em tile para cobrir o mundo inteiro

@@ -46,10 +46,7 @@ class Personagem:
         self.tempo_dormindo = 0
         self.duracao_dormindo = 0
 
-        if self.dormindo:
-            return
 
- 
         self.pulando_agora = False
         self.no_chao = True
         self.velocidade_y = 0
@@ -111,13 +108,36 @@ class Personagem:
                 self.frame = 0
  
     def atualizar(self):
+
         if not self.gato_vivo:
             return
- 
+
+        if self.dormindo:
+            tempo_atual = pg.time.get_ticks()
+
+            if tempo_atual - self.tempo_dormindo >= self.duracao_dormindo:
+                self.dormindo = False
+            else:
+                self.andando_flag = False
+                self.atacando_agora = False
+
+                self.velocidade_y += self.gravidade
+                self.y_gato += self.velocidade_y
+
+                if self.y_gato >= self.chao_y:
+                    self.y_gato = self.chao_y
+                    self.velocidade_y = 0
+                    self.no_chao = True
+                    self.pulando_agora = False
+
+                self.rect = pg.Rect(self.x_gato, self.y_gato, 50, 64)
+                return
+
         tecla = pg.key.get_pressed()
- 
+
         self.andando_flag = False
         self.velocidade_atual = self.velocidade
+
  
         if self.correndo_flag:
             self.velocidade_atual = self.velocidade * 1.5
@@ -156,6 +176,7 @@ class Personagem:
                 self.invulneravel = False
  
         self.rect = pg.Rect(self.x_gato, self.y_gato, 50, 64)
+
  
     # camera_x é novo parâmetro — desloca o desenho na tela
     def desenhar(self, janela, camera_x=0):
