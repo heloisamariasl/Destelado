@@ -14,7 +14,8 @@ class Personagem:
         self.gato_correndo = pg.image.load('assets/Cat/Tilesets/Cat1_Running.png').convert_alpha()
         self.coracao_cheio = pg.image.load('assets/vida/coracao_cheio.png').convert_alpha()
         self.coracao_vazio = pg.image.load('assets/vida/coracao_vazio.png').convert_alpha()
- 
+    
+
         self.frame = 0
         self.x_gato = 100
         self.y_gato = 460
@@ -40,7 +41,12 @@ class Personagem:
         self.tomando_dano = False
         self.invulneravel = False
         self.tempo_invulneravel = 0
- 
+
+        self.dormindo = False
+        self.tempo_dormindo = 0
+        self.duracao_dormindo = 0
+
+
         self.pulando_agora = False
         self.no_chao = True
         self.velocidade_y = 0
@@ -102,13 +108,36 @@ class Personagem:
                 self.frame = 0
  
     def atualizar(self):
+
         if not self.gato_vivo:
             return
- 
+
+        if self.dormindo:
+            tempo_atual = pg.time.get_ticks()
+
+            if tempo_atual - self.tempo_dormindo >= self.duracao_dormindo:
+                self.dormindo = False
+            else:
+                self.andando_flag = False
+                self.atacando_agora = False
+
+                self.velocidade_y += self.gravidade
+                self.y_gato += self.velocidade_y
+
+                if self.y_gato >= self.chao_y:
+                    self.y_gato = self.chao_y
+                    self.velocidade_y = 0
+                    self.no_chao = True
+                    self.pulando_agora = False
+
+                self.rect = pg.Rect(self.x_gato, self.y_gato, 50, 64)
+                return
+
         tecla = pg.key.get_pressed()
- 
+
         self.andando_flag = False
         self.velocidade_atual = self.velocidade
+
  
         if self.correndo_flag:
             self.velocidade_atual = self.velocidade * 1.5
@@ -147,6 +176,7 @@ class Personagem:
                 self.invulneravel = False
  
         self.rect = pg.Rect(self.x_gato, self.y_gato, 50, 64)
+
  
     # camera_x é novo parâmetro — desloca o desenho na tela
     def desenhar(self, janela, camera_x=0):
