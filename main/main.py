@@ -136,7 +136,7 @@ while not sair:
 
         if rect_previsto.colliderect(bloco.rect):
             if gato.velocidade_y >= 0 and gato.rect.bottom <= bloco.rect.top + 12:
-                gato.chao_y = bloco.rect.top - 64
+                gato.chao_y = bloco.rect.top - gato.rect.height
                 gato.no_chao = True
             elif gato.velocidade_y < 0 and gato.rect.top >= bloco.rect.bottom - 12:
                 gato.y_gato = bloco.rect.bottom
@@ -145,6 +145,7 @@ while not sair:
     gato.atualizar()
     
     gato.no_chao = True
+    gato.no_bloco = False
     gato.chao_y = CHAO_PADRAO
     
     for plataforma in blocos:
@@ -154,6 +155,7 @@ while not sair:
             gato.rect.right > plataforma.rect.left and gato.rect.left < plataforma.rect.right):
             gato.chao_y = plataforma.rect.top - gato.rect.height
             gato.no_chao = True
+            gato.no_bloco = True
     
     for plataforma in blocos:
         pg.draw.rect(janela, (255,0,0), (plataforma.rect.x - camera_x, plataforma.rect.y, plataforma.rect.width, plataforma.rect.height), 2)
