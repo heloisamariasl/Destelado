@@ -16,6 +16,7 @@ Ajudar o gato a sobreviver e superar obstáculos até conseguir retornar para su
 
 - Python
 - Pygame
+- Random
 
 ---
 
