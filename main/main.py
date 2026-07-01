@@ -31,39 +31,49 @@ clock = pg.time.Clock()
 gato = Personagem()
 gato.x_gato = 100
 
-# inimigos espalhados pelo mundo
-caes = [
-    Cachorro(800,  466, 700,  1000),
-    Cachorro(1600, 466, 1500, 1900),
-    Cachorro(2800, 466, 2600, 3100),
-    Cachorro(3800, 466, 3600, 4100),
-]
-
 # blocos espalhados pelo mundo (x, y, largura, altura)
 def gerar_blocos():
     dados = []
-
+    grupos = []
     x = 400
     y = 450
 
     while x < LARGURA_MUNDO - 300:
+        inicio_grupo = x
         quantidade_blocos = random.randint(2, 4)
         for _ in range(quantidade_blocos):
             largura = random.choice([100, 120, 150])
             dados.append((x, y, largura, 60))
-            x += largura + random.randint(60, 120)
+            ultimo_x = x
+            ultimo_y = y
+            ultima_largura = largura
+            x += largura + random.randint(20, 60)
             y += random.choice([-30, 0, 30])
             y = max(300, min(y, 450))
-        
+        fim_grupo = ultimo_x + ultima_largura
+        grupos.append((inicio_grupo, fim_grupo, ultimo_y))
         x += random.randint(180, 260)
         y = 450
 
-    return dados
+    return dados, grupos
 
-dados_blocos = gerar_blocos()
+dados_blocos, grupos_blocos = gerar_blocos()
 
 blocos = [Bloco("assets/cenário/bloco_pequeno.png", x, y, w, h) for x, y, w, h in dados_blocos]
 
+# inimigos espalhados pelo mundo
+caes = []
+posicao_x_inicial = 800
+for _ in range(7):
+    x_cao = random.randint(posicao_x_inicial, posicao_x_inicial + 300)
+    y_cao = 466
+    
+    ponto_ini = x_cao - 150
+    ponto_fim = x_cao + 150
+
+    caes.append(Cachorro(x_cao, y_cao, ponto_ini, ponto_fim))
+    posicao_x_inicial += 550
+    
 # ponto de chegada (bandeira / fim do nível)
 x_fim = LARGURA_MUNDO - 100
 
@@ -87,19 +97,23 @@ while not sair:
             gato = Personagem()
             gato.x_gato = 100
 
-            caes = [
-                Cachorro(800,466,700,1000),
-                Cachorro(1600,466,1500,1900),
-                Cachorro(2800,466,2600,3100),
-                Cachorro(3800,466,3600,4100),
-            ]
-
             coletaveis = []
             nivel_completo = False
             
-            dados_blocos = gerar_blocos()
+            dados_blocos, grupos_blocos = gerar_blocos()
             blocos = [Bloco("assets/cenário/bloco_pequeno.png", x, y, w, h) for x, y, w, h in dados_blocos]
+            caes = []
+            posicao_x_inicial = 800
+            for _ in range(7):
+                x_cao = random.randint(posicao_x_inicial, posicao_x_inicial + 300)
+                y_cao = 466
+                
+                ponto_ini = x_cao - 150
+                ponto_fim = x_cao + 150
 
+                caes.append(Cachorro(x_cao, y_cao, ponto_ini, ponto_fim))
+                posicao_x_inicial += 550
+ 
             menu.tela_atual = "principal"
             estado = "jogo"
 
@@ -136,20 +150,30 @@ while not sair:
     gato.x_gato = max(0, min(gato.x_gato, LARGURA_MUNDO - 50))
 
     # ── colisão com blocos ANTES de atualizar ────────────────────────────────
+    gato.rect.x = gato.x_gato
+    gato.rect.y = gato.y_gato
+    
     gato.chao_y = CHAO_PADRAO
-    gato.no_chao = gato.y_gato >= CHAO_PADRAO
+    gato.no_chao = (gato.y_gato >= CHAO_PADRAO)
+    gato.no_bloco = False
+    
+    gato_pe_esquerdo = gato.rect.left + 10
+    gato_pe_direito = gato.rect.right - 10
 
     for bloco in blocos:
-        rect_previsto = pg.Rect(gato.x_gato, gato.y_gato + gato.velocidade_y + gato.gravidade, 50, 64)
-
-        if rect_previsto.colliderect(bloco.rect):
-            if gato.velocidade_y >= 0 and gato.rect.bottom <= bloco.rect.top + 12:
-                gato.chao_y = bloco.rect.top - gato.rect.height
-                gato.no_chao = True
-            elif gato.velocidade_y < 0 and gato.rect.top >= bloco.rect.bottom - 12:
-                gato.y_gato = bloco.rect.bottom
-                gato.velocidade_y = 0
-
+        
+        if gato_pe_direito > bloco.rect.left and gato_pe_esquerdo < bloco.rect.right:
+            if gato.velocidade_y >= 0:
+                if gato.rect.bottom <= bloco.rect.top + 15:
+                    if gato.rect.bottom + gato.velocidade_y >= bloco.rect.top:
+                        gato.chao_y = bloco.rect.top - gato.rect.height
+                        gato.no_chao = True
+                        gato.no_bloco = True
+            elif gato.velocidade_y < 0:
+                if gato.rect.top >= bloco.rect.bottom - 15:
+                    if gato.rect.top + gato.velocidade_y <= bloco.rect.bottom:
+                        gato.y_gato = bloco.rect.bottom
+                        gato.velocidade_y = 0
     gato.atualizar()
     
     gato.no_chao = True
