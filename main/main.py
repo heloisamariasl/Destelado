@@ -40,18 +40,28 @@ caes = [
 ]
 
 # blocos espalhados pelo mundo (x, y, largura, altura)
-dados_blocos = [
-    (400,  450, 120, 60),
-    (600,  420, 120, 60),
-    (1200, 450, 120, 60),
-    (1350, 420, 150, 60),
-    (2000, 450, 120, 60),
-    (2400, 450, 120, 60),
-    (2550, 440, 150, 60),
-    (3300, 450, 120, 60),
-    (3450, 390, 120, 60),
-    (3600, 370, 150, 60),
-]
+def gerar_blocos():
+    dados = []
+
+    x = 400
+    y = 450
+
+    while x < LARGURA_MUNDO - 300:
+        quantidade_blocos = random.randint(2, 4)
+        for _ in range(quantidade_blocos):
+            largura = random.choice([100, 120, 150])
+            dados.append((x, y, largura, 60))
+            x += largura + random.randint(60, 120)
+            y += random.choice([-30, 0, 30])
+            y = max(300, min(y, 450))
+        
+        x += random.randint(180, 260)
+        y = 450
+
+    return dados
+
+dados_blocos = gerar_blocos()
+
 blocos = [Bloco("assets/cenário/bloco_pequeno.png", x, y, w, h) for x, y, w, h in dados_blocos]
 
 # ponto de chegada (bandeira / fim do nível)
@@ -86,6 +96,9 @@ while not sair:
 
             coletaveis = []
             nivel_completo = False
+            
+            dados_blocos = gerar_blocos()
+            blocos = [Bloco("assets/cenário/bloco_pequeno.png", x, y, w, h) for x, y, w, h in dados_blocos]
 
             menu.tela_atual = "principal"
             estado = "jogo"
@@ -161,14 +174,26 @@ while not sair:
     # verifica se chegou ao fim
     if gato.x_gato >= x_fim and not nivel_completo:
         nivel_completo = True
-
+    
+    def gerar_posicao():
+        while True:
+            if random.random() < 0.5:
+                x = random.randint(50, LARGURA_MUNDO - 200)
+                y = CHAO_PADRAO
+            else:
+                bloco = random.choice(blocos)
+                x = random.randint(bloco.rect.left, bloco.rect.right - 50)
+                y = bloco.rect.top - 50
+            if all(abs(x - c.rect.x) > 150 or abs(y - c.rect.y) > 50 for c in coletaveis):
+                return (x, y)
+    
     # spawn de coletáveis no mundo
     tempo_atual = pg.time.get_ticks()
     if tempo_atual >= proximo:
         tipo = random.choice(tipos_coletaveis)
         # spawna em posição aleatória no mundo, na altura do chão
-        obj = tipo()
-        obj.rect.x = random.randint(200, LARGURA_MUNDO - 200)
+        posicao = gerar_posicao()
+        obj = tipo(posicao=posicao)
         coletaveis.append(obj)
         proximo = tempo_atual + random.randint(3000, 7000)
 

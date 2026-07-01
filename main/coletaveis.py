@@ -13,7 +13,6 @@ def posicao_aleatoria():
     x = random.randint(50, 750)
     y = 460
     return(x,y)
-    
 
 class Coletaveis:
     def __init__(self, caminho_imagem, posicao, valor= 0, tempo = 0):
