@@ -91,5 +91,6 @@ class Catnip(Coletaveis):
 
     def acao(self, gato):
         gato.dormindo = True
+        gato.frame = 0
         gato.tempo_dormindo = pg.time.get_ticks()
         gato.duracao_dormindo = self.tempo * 1000

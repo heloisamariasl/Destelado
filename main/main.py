@@ -23,6 +23,9 @@ estado = "menu"
 fundo = pg.image.load("assets/cenário/background.png").convert()
 fundo = pg.transform.scale(fundo, (LARGURA_TELA, ALTURA_TELA))
 
+# imagem da casa (linha de chegada)
+casa_img = pg.image.load("assets/cenário/casa.png").convert_alpha()
+
 clock = pg.time.Clock()
 
 gato = Personagem()
@@ -40,12 +43,12 @@ caes = [
 dados_blocos = [
     (400,  450, 120, 60),
     (600,  420, 120, 60),
-    (1200, 430, 120, 60),
-    (1400, 420, 150, 60),
-    (2000, 440, 120, 60),
-    (2400, 430, 120, 60),
-    (2600, 430, 150, 60),
-    (3300, 410, 120, 60),
+    (1200, 450, 120, 60),
+    (1350, 420, 150, 60),
+    (2000, 450, 120, 60),
+    (2400, 450, 120, 60),
+    (2550, 440, 150, 60),
+    (3300, 450, 120, 60),
     (3450, 390, 120, 60),
     (3600, 370, 150, 60),
 ]
@@ -128,7 +131,7 @@ while not sair:
 
         if rect_previsto.colliderect(bloco.rect):
             if gato.velocidade_y >= 0 and gato.rect.bottom <= bloco.rect.top + 12:
-                gato.chao_y = bloco.rect.top - 64
+                gato.chao_y = bloco.rect.top - gato.rect.height
                 gato.no_chao = True
             elif gato.velocidade_y < 0 and gato.rect.top >= bloco.rect.bottom - 12:
                 gato.y_gato = bloco.rect.bottom
@@ -137,6 +140,7 @@ while not sair:
     gato.atualizar()
     
     gato.no_chao = True
+    gato.no_bloco = False
     gato.chao_y = CHAO_PADRAO
     
     for plataforma in blocos:
@@ -146,6 +150,7 @@ while not sair:
             gato.rect.right > plataforma.rect.left and gato.rect.left < plataforma.rect.right):
             gato.chao_y = plataforma.rect.top - gato.rect.height
             gato.no_chao = True
+            gato.no_bloco = True
     
     for plataforma in blocos:
         pg.draw.rect(janela, (255,0,0), (plataforma.rect.x - camera_x, plataforma.rect.y, plataforma.rect.width, plataforma.rect.height), 2)
@@ -225,7 +230,7 @@ while not sair:
         janela.blit(bloco.imagem, (bloco.rect.x - camera_x, bloco.rect.y))
 
     # marca o fim do nível
-    pg.draw.rect(janela, (255, 220, 0), (x_fim - camera_x, 380, 20, 80))
+    janela.blit(casa_img, (x_fim - camera_x - casa_img.get_width() // 2, CHAO_PADRAO + 64 - casa_img.get_height()))
 
     # gato — desenhado na posição de tela (x_gato - camera_x)
     gato.desenhar(janela, camera_x)

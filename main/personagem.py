@@ -12,6 +12,7 @@ class Personagem:
         self.dano_gato = pg.image.load('assets/Cat/Tilesets/Cat1_Hurt.png').convert_alpha()
         self.gato_morrendo = pg.image.load('assets/Cat/Tilesets/Cat1_Death.png').convert_alpha()
         self.gato_correndo = pg.image.load('assets/Cat/Tilesets/Cat1_Running.png').convert_alpha()
+        self.gato_dormindo = pg.image.load('assets/Cat/Tilesets/Cat1_Idle.png').convert_alpha()
         self.coracao_cheio = pg.image.load('assets/vida/coracao_cheio.png').convert_alpha()
         self.coracao_vazio = pg.image.load('assets/vida/coracao_vazio.png').convert_alpha()
     
@@ -43,18 +44,21 @@ class Personagem:
         self.tempo_invulneravel = 0
 
         self.dormindo = False
+        self.acordando = False
         self.tempo_dormindo = 0
         self.duracao_dormindo = 0
 
-
         self.pulando_agora = False
         self.no_chao = True
+        self.no_bloco = False
         self.velocidade_y = 0
         self.gravidade = 2
         self.chao_y = 460
  
         self.atacando_agora = False
         self.tipo_ataque = ''
+        
+        self.animacao_dormir_finalizada = False
  
         self.largura_frame_parado = 50
         self.altura_frame_parado = 64
@@ -85,6 +89,9 @@ class Personagem:
  
         self.largura_frame_atual = 50
         self.altura_frame_atual = 64
+        
+        self.largura_frame_dormindo = 80
+        self.altura_frame_dormindo = 64
  
         self.enrolado = False
         self.tempo_enrolado = 0
@@ -117,6 +124,8 @@ class Personagem:
 
             if tempo_atual - self.tempo_dormindo >= self.duracao_dormindo:
                 self.dormindo = False
+                self.acordando = True
+                self.frame = 28
             else:
                 self.andando_flag = False
                 self.atacando_agora = False
@@ -187,6 +196,9 @@ class Personagem:
         self.altura_frame_atual = self.altura_frame_parado
         self.ajuste_y = 0
  
+        if self.no_bloco and (self.andando_flag or not self.pulando_agora):
+            self.ajuste_y = 10
+        
         if not self.gato_vivo:
             self.sprite_atual = self.gato_morrendo
             self.largura_frame_atual = self.largura_frame_morte
@@ -201,7 +213,7 @@ class Personagem:
             self.sprite_atual = self.pulando
             self.largura_frame_atual = self.largura_frame_pulando
             self.altura_frame_atual = self.altura_frame_pulando
-            self.ajuste_y = -16
+            self.ajuste_y = 0
             self.contador_ani_pulo += 1
             if self.contador_ani_pulo % 2 == 0:
                 self.frame -= 1
@@ -222,6 +234,11 @@ class Personagem:
                 self.altura_frame_atual = self.altura_frame_ataque2
                 self.ajuste_y = -16
  
+        elif self.acordando:
+            self.sprite_atual = self.gato_dormindo
+            self.largura_frame_atual = self.largura_frame_dormindo
+            self.altura_frame_atual = self.altura_frame_dormindo
+        
         elif self.correndo_flag and self.andando_flag:
             self.sprite_atual = self.gato_correndo
             self.largura_frame_atual = self.largura_frame_correndo
@@ -231,6 +248,11 @@ class Personagem:
             self.sprite_atual = self.andando
             self.largura_frame_atual = self.largura_frame_andando
             self.altura_frame_atual = self.altura_frame_andando
+        
+        elif self.dormindo:
+            self.sprite_atual = self.gato_dormindo
+            self.largura_frame_atual = self.largura_frame_dormindo
+            self.altura_frame_atual = self.altura_frame_dormindo
  
         self.total_frames = self.sprite_atual.get_width() // self.largura_frame_atual
  
@@ -254,9 +276,23 @@ class Personagem:
         if self.tomando_dano and self.frame >= self.total_frames - 1:
             self.tomando_dano = False
             self.frame = 0
- 
-        if self.frame >= self.total_frames:
-            self.frame = 0
+
+        if self.dormindo:
+            if self.frame < 16:
+                self.frame += 1
+            else:
+                self.frame +=1
+                if self.frame > 27:
+                    self.frame = 16
+        elif self.acordando:
+            self.frame +=1
+            if self.frame > 32:
+                self.acordando = False
+                self.frame = 0
+                
+        else:
+            if self.frame >= self.total_frames:
+                self.frame = 0
  
         self.frame_gato = self.sprite_atual.subsurface(
             self.frame * self.largura_frame_atual, 0,
