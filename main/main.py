@@ -2,7 +2,7 @@ import pygame as pg
 import random
 from personagem import Personagem
 from inimigo import Cachorro
-from coletaveis import Peixe, Novelo, Bota, Catnip 
+from coletaveis import Peixe, Novelo, Bota, Catnip, posicao_aleatoria
 from blocos import Bloco
 from menu import MenuPrincipal
 
