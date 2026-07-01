@@ -256,12 +256,18 @@ class Personagem:
  
         self.total_frames = self.sprite_atual.get_width() // self.largura_frame_atual
  
+        if self.total_frames <= 0:
+            self.total_frames = 1
+
         if not self.gato_vivo:
             self.velocidade_morte += 1
             if self.velocidade_morte >= 3:
                 if self.frame < self.total_frames - 1:
                     self.frame += 1
                 self.velocidade_morte = 0
+
+            self.frame = max(0, min(self.frame, self.total_frames - 1))
+
             self.frame_gato = self.sprite_atual.subsurface(
                 self.frame * self.largura_frame_atual, 0,
                 self.largura_frame_atual, self.altura_frame_atual
@@ -294,6 +300,10 @@ class Personagem:
             if self.frame >= self.total_frames:
                 self.frame = 0
  
+        if self.total_frames <= 0:
+            self.total_frames = 1
+        self.frame = max(0, min(self.frame, self.total_frames - 1))
+
         self.frame_gato = self.sprite_atual.subsurface(
             self.frame * self.largura_frame_atual, 0,
             self.largura_frame_atual, self.altura_frame_atual
