@@ -23,6 +23,9 @@ estado = "menu"
 fundo = pg.image.load("assets/cenário/background.png").convert()
 fundo = pg.transform.scale(fundo, (LARGURA_TELA, ALTURA_TELA))
 
+# imagem da casa (linha de chegada)
+casa_img = pg.image.load("assets/cenário/casa.png").convert_alpha()
+
 clock = pg.time.Clock()
 
 gato = Personagem()
@@ -63,20 +66,38 @@ nivel_completo = False
 
 while not sair:
     for event in pg.event.get():
-
         if event.type == pg.QUIT:
             sair = True
 
-        if estado == "menu":
-            acao = menu.tratar_eventos(event)
+        acao = menu.tratar_eventos(event)
 
-            if acao == "jogar":
-                estado = "jogo"
-            elif acao == "opcoes":
-                print("Abrir opções")
-            elif acao == "sair":
-                sair = True
-            continue
+        if acao == "jogar":
+            estado = "jogo"
+        elif acao == "reiniciar":
+            gato = Personagem()
+            gato.x_gato = 100
+
+            caes = [
+                Cachorro(800,466,700,1000),
+                Cachorro(1600,466,1500,1900),
+                Cachorro(2800,466,2600,3100),
+                Cachorro(3800,466,3600,4100),
+            ]
+
+            coletaveis = []
+            nivel_completo = False
+
+            menu.tela_atual = "principal"
+            estado = "jogo"
+
+        elif acao == "sair":
+            sair = True
+       
+        elif acao == "menu":
+            menu.tela_atual = "principal"
+            estado = "menu"
+
+        gato.eventos(event)
 
         if event.type == pg.QUIT:
             sair = True
@@ -84,32 +105,6 @@ while not sair:
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_ESCAPE:
                 sair = True
-
-            if not gato.gato_vivo:
-                if event.key == pg.K_y:
-                    gato = Personagem()
-                    gato.x_gato = 100
-                    caes = [
-                        Cachorro(800,  466, 700,  1000),
-                        Cachorro(1600, 466, 1500, 1900),
-                        Cachorro(2800, 466, 2600, 3100),
-                        Cachorro(3800, 466, 3600, 4100),
-                    ]
-                    coletaveis = []
-                    nivel_completo = False
-
-            if nivel_completo:
-                if event.key == pg.K_y:
-                    gato = Personagem()
-                    gato.x_gato = 100
-                    caes = [
-                        Cachorro(800,  466, 700,  1000),
-                        Cachorro(1600, 466, 1500, 1900),
-                        Cachorro(2800, 466, 2600, 3100),
-                        Cachorro(3800, 466, 3600, 4100),
-                    ]
-                    coletaveis = []
-                    nivel_completo = False
 
         gato.eventos(event)
 
@@ -177,27 +172,18 @@ while not sair:
         coletaveis.append(obj)
         proximo = tempo_atual + random.randint(3000, 7000)
 
-    # tela de morte
+    # tela de game over
     if not gato.gato_vivo:
         tempo_atual = pg.time.get_ticks()
         if tempo_atual - gato.tempo_morte >= 3000:
-            janela.fill((0, 0, 0))
-            fonte = pg.font.Font(None, 50)
-            texto = fonte.render("Deseja reiniciar? (Y) Sim (ESC) Sair", True, (255, 255, 255))
-            janela.blit(texto, (60, 255))
-            pg.display.flip()
+            menu.tela_atual = "game_over"
+            estado = "menu"
             continue
 
     # tela de vitória
     if nivel_completo:
-        janela.fill((0, 0, 0))
-        fonte = pg.font.Font(None, 60)
-        texto = fonte.render("Você chegou ao fim!", True, (255, 220, 0))
-        janela.blit(texto, (160, 220))
-        fonte2 = pg.font.Font(None, 40)
-        texto2 = fonte2.render("(Y) Jogar de novo  (ESC) Sair", True, (255, 255, 255))
-        janela.blit(texto2, (180, 300))
-        pg.display.flip()
+        menu.tela_atual = "vitoria"
+        estado = "menu"
         continue
 
     # coletáveis
@@ -244,7 +230,7 @@ while not sair:
         janela.blit(bloco.imagem, (bloco.rect.x - camera_x, bloco.rect.y))
 
     # marca o fim do nível
-    pg.draw.rect(janela, (255, 220, 0), (x_fim - camera_x, 380, 20, 80))
+    janela.blit(casa_img, (x_fim - camera_x - casa_img.get_width() // 2, CHAO_PADRAO + 64 - casa_img.get_height()))
 
     # gato — desenhado na posição de tela (x_gato - camera_x)
     gato.desenhar(janela, camera_x)
