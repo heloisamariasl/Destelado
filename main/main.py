@@ -1,7 +1,7 @@
 import pygame as pg
 from personagem import Personagem
 from inimigo import Cachorro
-from coletaveis import Peixe, Novelo
+from coletaveis import Peixe, Novelo, Bota
 
 pg.init()
 janela = pg.display.set_mode((800, 600))
