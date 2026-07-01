@@ -23,6 +23,9 @@ estado = "menu"
 fundo = pg.image.load("assets/cenário/background.png").convert()
 fundo = pg.transform.scale(fundo, (LARGURA_TELA, ALTURA_TELA))
 
+# imagem da casa (linha de chegada)
+casa_img = pg.image.load("assets/cenário/casa.png").convert_alpha()
+
 clock = pg.time.Clock()
 
 gato = Personagem()
@@ -244,7 +247,7 @@ while not sair:
         janela.blit(bloco.imagem, (bloco.rect.x - camera_x, bloco.rect.y))
 
     # marca o fim do nível
-    pg.draw.rect(janela, (255, 220, 0), (x_fim - camera_x, 380, 20, 80))
+    janela.blit(casa_img, (x_fim - camera_x - casa_img.get_width() // 2, CHAO_PADRAO + 64 - casa_img.get_height()))
 
     # gato — desenhado na posição de tela (x_gato - camera_x)
     gato.desenhar(janela, camera_x)
