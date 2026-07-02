@@ -7,19 +7,27 @@ Coletáveis do jogo Destelado são:
 """
 
 import pygame as pg
+import random
+
+def posicao_aleatoria():
+    x = random.randint(50, 750)
+    y = 460
+    return(x,y)
 
 class Coletaveis:
     def __init__(self, caminho_imagem, posicao, valor= 0, tempo = 0):
         self.valor = valor
         self.tempo = tempo
-        self.imagem = pg.transform.scale(pg.image.load(caminho_imagem).convert_alpha(), (60, 60))
+        self.imagem = pg.transform.scale(pg.image.load(caminho_imagem).convert_alpha(), (50, 50))
         self.rect = self.imagem.get_rect(topleft=posicao)
 
     def acao(self,gato):#Cada classe que representa um coletável decide qual a sua ação e efeito para o personagem
         pass
 
 class Peixe(Coletaveis):
-    def __init__(self, posicao):
+    def __init__(self, posicao = None):
+        if posicao is None:
+            posicao = posicao_aleatoria()
         super().__init__("assets/coletaveis/peixe.png", posicao)
 
     def acao(self, gato):
@@ -28,8 +36,14 @@ class Peixe(Coletaveis):
             gato.vida_gato = gato.vida_gato_max
 
 class Novelo(Coletaveis):
-    def __init__(self, posicao, tempo=5):
+    def __init__(self, posicao = None, tempo=5):
+        if posicao is None:
+            posicao = posicao_aleatoria()
         super().__init__("assets/coletaveis/novelo.png", posicao, tempo=tempo)
+        
+        self.imagem = pg.transform.scale(self.imagem, (30,30))
+        self.rect = self.imagem.get_rect(topleft=posicao)
+        self.rect.y += 20
 
     def acao(self, gato):
         # ativa o efeito
@@ -43,28 +57,39 @@ class Novelo(Coletaveis):
 
 
 class Bota(Coletaveis):
-    def __init__(self):
-        self.tempo = 10  # duração do efeito em segundos
+    def __init__(self, posicao=None, tempo=3):
+        if posicao is None:
+            posicao = posicao_aleatoria()
+
+        self.tempo = 10
 
         self.imagem = pg.transform.scale(
             pg.image.load("assets/coletaveis/bota.png").convert_alpha(),
             (60, 60)
         )
 
-        self.rect = self.imagem.get_rect(topleft=(600, 300))
+        self.rect = self.imagem.get_rect(topleft=posicao)
 
     def acao(self, gato):
-        # guarda a velocidade original
-        gato.velocidade_original = gato.velocidade
-
-        # aumenta a velocidade em 50%
-        gato.velocidade *= 1.5
-
-        # ativa o efeito
+        gato.correndo_flag = True
         gato.bota_ativa = True
-
-        # registra o momento da coleta
         gato.tempo_bota = pg.time.get_ticks()
-
-        # converte segundos para milissegundos
         gato.duracao_bota = self.tempo * 1000
+
+
+class Catnip(Coletaveis):
+    def __init__(self, posicao=None, tempo=5):
+        if posicao is None:
+            posicao = posicao_aleatoria()
+
+        super().__init__(
+            "assets/coletaveis/catnip.png",
+            posicao,
+            tempo=tempo
+        )
+
+    def acao(self, gato):
+        gato.dormindo = True
+        gato.frame = 0
+        gato.tempo_dormindo = pg.time.get_ticks()
+        gato.duracao_dormindo = self.tempo * 1000
